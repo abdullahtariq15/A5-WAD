@@ -1,0 +1,220 @@
+﻿<html>
+<head>
+    <title>TDash</title>
+    <script src="../Scripts/angular.min.js"></script>
+    <script src="../Scripts/jquery-3.4.1.min.js"></script>
+    <link href="../css/bootstrap.css" rel="stylesheet" />
+    <script src="../js/bootstrap.min.js"></script>
+    <style>
+        body {
+            background-image: url(images/mjb2.jpg) !important;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-size: cover;
+        }
+    </style>
+</head>
+<body ng-app="Dashboard" ng-controller="myController">
+    <div class="container">
+        <br>
+        <sm>{{userInfo}}</sm> <a class="btn btn-outline-warning" href="Login.html">Log Out</a>
+        <h2>Tourist Records</h2>
+
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal" id="btnEmpty" ng-click="displayForAdd()">Add New Record</button>
+        <a type="button" style="margin-left:5%" class="btn btn-secondary" id="btnBooking" href="PDashboard.html">Go To Packages</a>
+        <a type="button" style="margin-left:5%" class="btn btn-secondary" id="btnPackage" href="BDashboard.html">Go To Bookings</a><br /><br />
+
+        <table class="table table-dark">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">T_ID</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">PhoneNumber</th>
+                    <th scope="col">CNIC</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Operation</th>
+                </tr>
+            </thead>
+            <tbody id="tabcontent">
+                <tr ng-repeat="x in data">
+                    <td>{{ x.TouristId }}</td>
+                    <td>{{ x.Name }}</td>
+                    <td>{{ x.PhoneNumber }}</td>
+                    <td>{{ x.CNIC }}</td>
+                    <td>{{ x.Email }}</td>
+                    <td><a href="#" data-toggle="modal" data-target="#myModal" ng-click="displayForUpdate(x)">Edit </a> | <a href="#" data-toggle="modal" data-target="#myModal" ng-click="displayForRemove(x)">Delete</a></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="modal" id="myModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="myModalLabel">{{operation}}</h4>
+                    <button type="button" class="close" data-dismiss="modal">×</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="TouristId">ID</label>
+                        <input type="text" class="form-control" ng-model="TouristId" placeholder="Tourist Id" />
+                    </div>
+                    <div class="form-group">
+                        <label for="Name">Name</label>
+                        <input type="text" class="form-control" ng-model="Name" placeholder="Name" />
+                    </div>
+                    <div class="form-group">
+                        <label for="PhoneNumber">PhoneNo.</label>
+                        <input type="text" class="form-control" ng-model="PhoneNumber" placeholder="Phone Number" />
+                    </div>
+                    <div class="form-group">
+                        <label for="CNIC">CNIC</label>
+                        <input type="text" class="form-control" ng-model="CNIC" placeholder="CNIC" />
+                    </div>
+                    <div class="form-group">
+                        <label for="Email">Email</label>
+                        <input type="text" class="form-control" ng-model="Email" placeholder="Email" />
+                        <hr>
+                        <center>
+                        <button type="button" class="btn btn-success" data-target="myModal" data-dismiss="modal" ng-click="addNewRecord()" id="btnAdd">Add</button>
+                        <button type="button" class="btn btn-danger" data-bind="myModal" data-dismiss="modal" ng-click="deleteRecord()" id="btnDelete">Delete</button>
+                        <button type="button" class="btn btn-primary" data-bind="myModal" data-dismiss="modal" ng-click="updateRecord()" id="btnUpdate">Update</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </center>
+                    </div>
+                </div>
+               
+            </div>
+           
+        </div>
+        
+    </div>
+    <script>
+		var myApp = angular.module('Dashboard', []);
+					myApp.controller("myController", function ($scope, $http) {
+						$scope.displayForAdd=function(){
+							$scope.operation="Add New Record";
+							$("#btnDelete").hide();
+							$("#btnUpdate").hide();
+						}
+						$scope.displayForUpdate = function (value) {
+							$scope.operation="Update Record";
+                            $scope.TouristId = value.TouristId;
+							$scope.Name=value.Name;
+                            $scope.PhoneNumber = value.PhoneNumber;
+							$scope.CNIC=value.CNIC;
+							$scope.Email=value.Email;
+							$("#btnDelete").hide();
+							$("#btnAdd").hide();
+						}
+						$scope.displayForRemove = function (value) {
+							$scope.operation="Remove Record";
+                            $scope.TouristId = value.TouristId;
+                            $scope.Name = value.Name;
+                            $scope.PhoneNumber = value.PhoneNumber;
+                            $scope.CNIC = value.CNIC;
+                            $scope.email = value.Email;
+                            $("#btnUpdate").hide();
+                            $("#btnAdd").hide();
+						}
+                        $scope.addNewRecord = function () {
+                            var tourist = {
+                                "TouristId": $scope.TouristId,
+                                "Name": $scope.Name,
+                                "PhoneNumber": $scope.PhoneNumber,
+                                "CNIC": $scope.CNIC,
+                                "Email": $scope.Email
+                            };
+                            ///////////Add RECORD/////////////////
+                            var req = {
+                                method: 'POST',
+                                url: '/api/tourists/',
+                                data: tourist,
+                                headers: {
+                                    'Content-Type': 'application/json; charset=utf-8',
+                                    'Accept': 'application/json',
+                                    'Authorization': 'bearer ' + localStorage.getItem('token')
+                                }
+                            }
+                            //data, status, headers, config
+                            $http(req).then(function (response) { $scope.data = response.data; resetOptions(); },
+                                        function (response) { alert("failed " + JSON.stringify(response)); });
+                            /////////////////////////////////////////
+                        }
+						$scope.deleteRecord=function(){
+                             ///////////Add RECORD/////////////////
+                            var req = {
+                                method: 'DELETE',
+                                url: '/api/tourists/' + $scope.TouristId,
+                                headers: {
+                                    'Content-Type': 'application/json; charset=utf-8',
+                                    'Accept': 'application/json',
+                                    'Authorization': 'bearer ' + localStorage.getItem('token')
+                                }
+                            }
+                            //data, status, headers, config
+                            $http(req).then(function (response) { $scope.data = response.data; resetOptions(); },
+                                function (response) { alert("failed " + JSON.stringify(response)); });
+                            /////////////////////////////////////////
+						}
+                        $scope.updateRecord = function () {
+                            var tourist = {
+                                "TouristId": $scope.TouristId,
+                                "Name": $scope.Name,
+                                "PhoneNumber": $scope.PhoneNumber,
+                                "CNIC": $scope.CNIC,
+                                "Email": $scope.Email
+                            };
+                            ///////////UPDATE RECORD/////////////////
+                            var req = {
+                                method: 'PUT',
+                                url: '/api/tourists/' + $scope.TouristId,
+                                data: tourist,
+                                headers: {
+                                    'Content-Type': 'application/json; charset=utf-8',
+                                    'Accept': 'application/json',
+                                    'Authorization': 'bearer ' + localStorage.getItem('token')
+                                }
+                            }
+                            //data, status, headers, config
+                            $http(req).then(function (response) { $scope.data = response.data; resetOptions(); },
+                                        function (response) { alert("failed " + response.status + JSON.stringify(response)); });
+                            /////////////////////////////////////////
+                        }
+						resetOptions=function(){
+							$("#btnDelete").show();
+							$("#btnAdd").show();
+							$("#btnUpdate").show();
+                        }
+                        /////////////////////////CODE TO BE EXECUTED ON PAGE LOAD//////////////////////
+						//code that executes on page load without call
+                        var req = {
+                            method: 'GET',
+                            url: '/api/tourists',
+                            headers: {
+                                'Content-Type': 'application/json; charset=utf-8',
+                                'Accept': 'application/json',
+                                'Authorization': 'bearer ' + localStorage.getItem('token')
+                            }
+                        }
+                        //data, status, headers, config
+                        $http(req).then(function (response) { $scope.data = response.data; },
+                                        function (response) { alert("failed " + response.status); });
+                         var req = {
+                            method: 'GET',
+                            url: '/api/account/UserInfo',
+                            headers: {
+                                'Content-Type': 'application/json; charset=utf-8',
+                                'Accept': 'application/json',
+                                'Authorization': 'bearer ' + localStorage.getItem('token')
+                            }
+                        }
+                        //data, status, headers, config
+                        $http(req).then(function (response) { alert(JSON.stringify(response.data.Email)); $scope.userInfo = response.data.Email; },
+                                        function (response) { alert("failed " + response.status); });
+                       
+                    });
+    </script>
+</body>
+</html>

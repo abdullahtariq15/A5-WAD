@@ -1,0 +1,166 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+
+    <script src="Scripts/angular.min.js"></script>
+    <script src="Scripts/jquery-3.4.1.min.js"></script>
+
+    <link href="https://fonts.googleapis.com/css?family=Mukta+Mahee:200,300,400|Abril+Fatface:400,700" rel="stylesheet">
+
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="stylesheet" href="css/animate.css">
+    <link rel="stylesheet" href="css/owl.carousel.min.css">
+    <link rel="stylesheet" href="css/aos.css">
+    <link rel="stylesheet" href="css/fancybox.min.css">
+    <link rel="stylesheet" href="css/animsition.min.css">
+
+    <link rel="stylesheet" href="fonts/ionicons/css/ionicons.min.css">
+    <link rel="stylesheet" href="fonts/fontawesome/css/font-awesome.min.css">
+
+    <!-- Theme Style -->
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        body {
+            background-image: url(images/hero_4.jpg) !important;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-size: cover;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container" ng-app="myApp">
+
+        <div class="row">
+            <div class="col-md-4 jumbotron">
+                <h3>Register</h3><hr>
+                <form ng-controller="regUserController">
+                    <div class="form-group">
+                        <label for="uname">User Name:</label>
+                        <div class="input-group">
+                            <div class="input-group-addon glyphicon glyphicon-user"></div>
+                            <input type="text" ng-model="email" placeholder="E-mail Id" maxlength="20" class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="pwd">Password:</label>
+                        <div class="input-group">
+                            <div class="input-group-addon glyphicon glyphicon-lock"></div>
+                            <input type="password" ng-model="password" placeholder="password" formControlName="password" class="form-control">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="pwd">Confirm Password:</label>
+                        <div class="input-group">
+                            <div class="input-group-addon glyphicon glyphicon-lock"></div>
+                            <input type="password" ng-model="ConfirmPassword" placeholder="Confirm Password" formControlName="ConfirmPassword" class="form-control">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <input type="submit" value="Register" ng-click="register()" class="btn btn-primary">
+                    </div>
+                </form>
+            </div>
+            <div class="col-md-4">
+                <br><br>
+               
+            </div>
+            <div class="col-md-4 jumbotron">
+                <h3>Login</h3><hr>
+                <form ng-controller="loginController">
+                    <div class="form-group">
+                        <label for="uname">User Name:</label>
+                        <div class="input-group">
+                            <div class="input-group-addon glyphicon glyphicon-user"></div>
+                            <input type="text" ng-model="email" placeholder="E-mail Id" maxlength="20" class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="pwd">Password:</label>
+                        <div class="input-group">
+                            <div class="input-group-addon glyphicon glyphicon-lock"></div>
+                            <input type="password" ng-model="password" placeholder="password" formControlName="password" class="form-control">
+                        </div>
+                    </div><br>
+                    <div class="form-group">
+                        <input type="submit" value="Login" ng-click="signIn()" class="btn btn-primary">
+                    </div>
+                    <br>
+                    <div>
+                        After Login you will see Tourist Dashboard.
+                        </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script>
+        var myApp = angular.module('myApp', []);
+        myApp.controller("regUserController", function ($scope, $http) {
+            $scope.register = function () {
+                var bearer = "";
+                var user = {
+                    grant_type: 'password',
+                    Email: $scope.email,
+                    password: $scope.password,
+                    ConfirmPassword: $scope.ConfirmPassword
+                };
+                $.ajax({
+                    type: "POST",
+                    url: "/api/Account/Register",
+                    data: user,
+                    contentType: "application/x-www-form-urlencoded",
+                    dataType: "text",
+                    success: function (data) {
+                        alert("registered successfully");
+                    },
+                    failure: function (response) {
+                        alert("failed " + JSON.stringify(response));
+                    },
+                    error: function (response) {
+                        alert("On Error " + JSON.stringify(response));
+                    }
+                });
+            }
+        });
+        myApp.controller("loginController", function ($scope, $http) {
+            $scope.signIn = function () {
+                var bearer = "";
+                var user = {
+                    grant_type: 'password',
+                    username: $scope.email,
+                    password: $scope.password
+                };
+                $.ajax({
+                    type: "POST",
+                    url: "/token",
+                    data: user,
+                    contentType: "application/x-www-form-urlencoded",
+                    dataType: "json",
+                    success: function (data) {
+                        bearer = data.access_token;
+                        localStorage.setItem('token', bearer);
+                        window.location.href = "TDashboard.html";
+                    },
+                    failure: function (response) {
+                        alert("Failed" + response.responseText);
+                        alert(JSON.stringify(response));
+                    },
+                    error: function (response) {
+                        alert("Error" + response.responseText);
+                        alert(JSON.stringify(response));
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
+
+
+
+
+
