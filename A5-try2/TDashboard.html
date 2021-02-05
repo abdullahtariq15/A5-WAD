@@ -16,9 +16,11 @@
     </style>
 </head>
 <body ng-app="Dashboard" ng-controller="myController">
+    
     <div class="container">
+        <h1>Checking GIT_HUB</h1>
         <br>
-        <sm>{{userInfo}}</sm> <a class="btn btn-outline-warning" href="Login.html">Log Out</a>
+        <sm>{{userInfo}}</sm> <a class="btn btn-outline-warning" href="Login.html">LOG Out</a>
         <h2>Tourist Records</h2>
 
         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal" id="btnEmpty" ng-click="displayForAdd()">Add New Record</button>
@@ -77,144 +79,144 @@
                         <input type="text" class="form-control" ng-model="Email" placeholder="Email" />
                         <hr>
                         <center>
-                        <button type="button" class="btn btn-success" data-target="myModal" data-dismiss="modal" ng-click="addNewRecord()" id="btnAdd">Add</button>
-                        <button type="button" class="btn btn-danger" data-bind="myModal" data-dismiss="modal" ng-click="deleteRecord()" id="btnDelete">Delete</button>
-                        <button type="button" class="btn btn-primary" data-bind="myModal" data-dismiss="modal" ng-click="updateRecord()" id="btnUpdate">Update</button>
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-success" data-target="myModal" data-dismiss="modal" ng-click="addNewRecord()" id="btnAdd">Add</button>
+                            <button type="button" class="btn btn-danger" data-bind="myModal" data-dismiss="modal" ng-click="deleteRecord()" id="btnDelete">Delete</button>
+                            <button type="button" class="btn btn-primary" data-bind="myModal" data-dismiss="modal" ng-click="updateRecord()" id="btnUpdate">Update</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                         </center>
                     </div>
                 </div>
-               
+
             </div>
-           
+
         </div>
-        
+
     </div>
     <script>
-		var myApp = angular.module('Dashboard', []);
-					myApp.controller("myController", function ($scope, $http) {
-						$scope.displayForAdd=function(){
-							$scope.operation="Add New Record";
-							$("#btnDelete").hide();
-							$("#btnUpdate").hide();
-						}
-						$scope.displayForUpdate = function (value) {
-							$scope.operation="Update Record";
-                            $scope.TouristId = value.TouristId;
-							$scope.Name=value.Name;
-                            $scope.PhoneNumber = value.PhoneNumber;
-							$scope.CNIC=value.CNIC;
-							$scope.Email=value.Email;
-							$("#btnDelete").hide();
-							$("#btnAdd").hide();
-						}
-						$scope.displayForRemove = function (value) {
-							$scope.operation="Remove Record";
-                            $scope.TouristId = value.TouristId;
-                            $scope.Name = value.Name;
-                            $scope.PhoneNumber = value.PhoneNumber;
-                            $scope.CNIC = value.CNIC;
-                            $scope.email = value.Email;
-                            $("#btnUpdate").hide();
-                            $("#btnAdd").hide();
-						}
-                        $scope.addNewRecord = function () {
-                            var tourist = {
-                                "TouristId": $scope.TouristId,
-                                "Name": $scope.Name,
-                                "PhoneNumber": $scope.PhoneNumber,
-                                "CNIC": $scope.CNIC,
-                                "Email": $scope.Email
-                            };
-                            ///////////Add RECORD/////////////////
-                            var req = {
-                                method: 'POST',
-                                url: '/api/tourists/',
-                                data: tourist,
-                                headers: {
-                                    'Content-Type': 'application/json; charset=utf-8',
-                                    'Accept': 'application/json',
-                                    'Authorization': 'bearer ' + localStorage.getItem('token')
-                                }
-                            }
-                            //data, status, headers, config
-                            $http(req).then(function (response) { $scope.data = response.data; resetOptions(); },
-                                        function (response) { alert("failed " + JSON.stringify(response)); });
-                            /////////////////////////////////////////
-                        }
-						$scope.deleteRecord=function(){
-                             ///////////Add RECORD/////////////////
-                            var req = {
-                                method: 'DELETE',
-                                url: '/api/tourists/' + $scope.TouristId,
-                                headers: {
-                                    'Content-Type': 'application/json; charset=utf-8',
-                                    'Accept': 'application/json',
-                                    'Authorization': 'bearer ' + localStorage.getItem('token')
-                                }
-                            }
-                            //data, status, headers, config
-                            $http(req).then(function (response) { $scope.data = response.data; resetOptions(); },
-                                function (response) { alert("failed " + JSON.stringify(response)); });
-                            /////////////////////////////////////////
-						}
-                        $scope.updateRecord = function () {
-                            var tourist = {
-                                "TouristId": $scope.TouristId,
-                                "Name": $scope.Name,
-                                "PhoneNumber": $scope.PhoneNumber,
-                                "CNIC": $scope.CNIC,
-                                "Email": $scope.Email
-                            };
-                            ///////////UPDATE RECORD/////////////////
-                            var req = {
-                                method: 'PUT',
-                                url: '/api/tourists/' + $scope.TouristId,
-                                data: tourist,
-                                headers: {
-                                    'Content-Type': 'application/json; charset=utf-8',
-                                    'Accept': 'application/json',
-                                    'Authorization': 'bearer ' + localStorage.getItem('token')
-                                }
-                            }
-                            //data, status, headers, config
-                            $http(req).then(function (response) { $scope.data = response.data; resetOptions(); },
-                                        function (response) { alert("failed " + response.status + JSON.stringify(response)); });
-                            /////////////////////////////////////////
-                        }
-						resetOptions=function(){
-							$("#btnDelete").show();
-							$("#btnAdd").show();
-							$("#btnUpdate").show();
-                        }
-                        /////////////////////////CODE TO BE EXECUTED ON PAGE LOAD//////////////////////
-						//code that executes on page load without call
-                        var req = {
-                            method: 'GET',
-                            url: '/api/tourists',
-                            headers: {
-                                'Content-Type': 'application/json; charset=utf-8',
-                                'Accept': 'application/json',
-                                'Authorization': 'bearer ' + localStorage.getItem('token')
-                            }
-                        }
-                        //data, status, headers, config
-                        $http(req).then(function (response) { $scope.data = response.data; },
-                                        function (response) { alert("failed " + response.status); });
-                         var req = {
-                            method: 'GET',
-                            url: '/api/account/UserInfo',
-                            headers: {
-                                'Content-Type': 'application/json; charset=utf-8',
-                                'Accept': 'application/json',
-                                'Authorization': 'bearer ' + localStorage.getItem('token')
-                            }
-                        }
-                        //data, status, headers, config
-                        $http(req).then(function (response) { alert(JSON.stringify(response.data.Email)); $scope.userInfo = response.data.Email; },
-                                        function (response) { alert("failed " + response.status); });
-                       
-                    });
+        var myApp = angular.module('Dashboard', []);
+        myApp.controller("myController", function ($scope, $http) {
+            $scope.displayForAdd = function () {
+                $scope.operation = "Add New Record";
+                $("#btnDelete").hide();
+                $("#btnUpdate").hide();
+            }
+            $scope.displayForUpdate = function (value) {
+                $scope.operation = "Update Record";
+                $scope.TouristId = value.TouristId;
+                $scope.Name = value.Name;
+                $scope.PhoneNumber = value.PhoneNumber;
+                $scope.CNIC = value.CNIC;
+                $scope.Email = value.Email;
+                $("#btnDelete").hide();
+                $("#btnAdd").hide();
+            }
+            $scope.displayForRemove = function (value) {
+                $scope.operation = "Remove Record";
+                $scope.TouristId = value.TouristId;
+                $scope.Name = value.Name;
+                $scope.PhoneNumber = value.PhoneNumber;
+                $scope.CNIC = value.CNIC;
+                $scope.email = value.Email;
+                $("#btnUpdate").hide();
+                $("#btnAdd").hide();
+            }
+            $scope.addNewRecord = function () {
+                var tourist = {
+                    "TouristId": $scope.TouristId,
+                    "Name": $scope.Name,
+                    "PhoneNumber": $scope.PhoneNumber,
+                    "CNIC": $scope.CNIC,
+                    "Email": $scope.Email
+                };
+                ///////////Add RECORD/////////////////
+                var req = {
+                    method: 'POST',
+                    url: '/api/tourists/',
+                    data: tourist,
+                    headers: {
+                        'Content-Type': 'application/json; charset=utf-8',
+                        'Accept': 'application/json',
+                        'Authorization': 'bearer ' + localStorage.getItem('token')
+                    }
+                }
+                //data, status, headers, config
+                $http(req).then(function (response) { $scope.data = response.data; resetOptions(); },
+                    function (response) { alert("failed " + JSON.stringify(response)); });
+                /////////////////////////////////////////
+            }
+            $scope.deleteRecord = function () {
+                ///////////Add RECORD/////////////////
+                var req = {
+                    method: 'DELETE',
+                    url: '/api/tourists/' + $scope.TouristId,
+                    headers: {
+                        'Content-Type': 'application/json; charset=utf-8',
+                        'Accept': 'application/json',
+                        'Authorization': 'bearer ' + localStorage.getItem('token')
+                    }
+                }
+                //data, status, headers, config
+                $http(req).then(function (response) { $scope.data = response.data; resetOptions(); },
+                    function (response) { alert("failed " + JSON.stringify(response)); });
+                /////////////////////////////////////////
+            }
+            $scope.updateRecord = function () {
+                var tourist = {
+                    "TouristId": $scope.TouristId,
+                    "Name": $scope.Name,
+                    "PhoneNumber": $scope.PhoneNumber,
+                    "CNIC": $scope.CNIC,
+                    "Email": $scope.Email
+                };
+                ///////////UPDATE RECORD/////////////////
+                var req = {
+                    method: 'PUT',
+                    url: '/api/tourists/' + $scope.TouristId,
+                    data: tourist,
+                    headers: {
+                        'Content-Type': 'application/json; charset=utf-8',
+                        'Accept': 'application/json',
+                        'Authorization': 'bearer ' + localStorage.getItem('token')
+                    }
+                }
+                //data, status, headers, config
+                $http(req).then(function (response) { $scope.data = response.data; resetOptions(); },
+                    function (response) { alert("failed " + response.status + JSON.stringify(response)); });
+                /////////////////////////////////////////
+            }
+            resetOptions = function () {
+                $("#btnDelete").show();
+                $("#btnAdd").show();
+                $("#btnUpdate").show();
+            }
+            /////////////////////////CODE TO BE EXECUTED ON PAGE LOAD//////////////////////
+            //code that executes on page load without call
+            var req = {
+                method: 'GET',
+                url: '/api/tourists',
+                headers: {
+                    'Content-Type': 'application/json; charset=utf-8',
+                    'Accept': 'application/json',
+                    'Authorization': 'bearer ' + localStorage.getItem('token')
+                }
+            }
+            //data, status, headers, config
+            $http(req).then(function (response) { $scope.data = response.data; },
+                function (response) { alert("failed " + response.status); });
+            var req = {
+                method: 'GET',
+                url: '/api/account/UserInfo',
+                headers: {
+                    'Content-Type': 'application/json; charset=utf-8',
+                    'Accept': 'application/json',
+                    'Authorization': 'bearer ' + localStorage.getItem('token')
+                }
+            }
+            //data, status, headers, config
+            $http(req).then(function (response) { alert(JSON.stringify(response.data.Email)); $scope.userInfo = response.data.Email; },
+                function (response) { alert("failed " + response.status); });
+
+        });
     </script>
 </body>
 </html>
